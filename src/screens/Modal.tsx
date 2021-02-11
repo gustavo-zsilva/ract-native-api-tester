@@ -101,7 +101,7 @@ const Modal = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         // marginTop: StatusBar.currentHeight,
-        paddingTop: 120,
+        paddingTop: 100,
         padding: 30,
         flex: 1,
         backgroundColor: '#3F4A59'

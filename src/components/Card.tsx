@@ -14,13 +14,16 @@ import layoutStyles from '../styles/Layout';
 
 interface Request {
     success: boolean;
-    response: string;
-    method: string;
+    response?: string;
+    status?: number;
+    method?: string;
+    data?: Object;
     headers?: {
         accept: string;
     }
     sent?: boolean;
     readyState?: number;
+    server?: string;
 }
 
 const Card = ({ item }: any) => {
@@ -34,7 +37,17 @@ const Card = ({ item }: any) => {
         setIsProcessingRequest(true);
 
         axios.get(apiUrl)
-        .then((data) => console.log(data))
+        .then((data) => {
+            const dataToSave = {
+                success: true,
+                data: data.data,
+                method: data.request["_method"],
+                status: data.status,
+                server: data.headers.server
+            }
+
+            setRequestData(dataToSave);
+        })
         .catch((err) => {
             if (err.response) {
                 console.log(err.response.data)
@@ -48,15 +61,21 @@ const Card = ({ item }: any) => {
                     success: false,
                     response: err.request["_response"],
                     method: err.request["_method"],
+                    status: err.request["status"],
                     headers: err.request["_headers"]["accept"],
                     sent: err.request["_sent"],
                     readyState: err.request["readyState"]
                 }
 
-                setRequestData(dataToSave)
+                setRequestData(dataToSave);
             } else {
-                console.log(err.message);
                 
+                const dataToSave = {
+                    success: false,
+                    response: err.message,
+                }
+
+                setRequestData(dataToSave);
             }
 
             // console.log(err.config);
