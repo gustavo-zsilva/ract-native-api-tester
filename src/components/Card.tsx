@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import axios from 'axios';
 
@@ -30,6 +30,10 @@ const Card = ({ item }: any) => {
 
     const [isProcessingRequest, setIsProcessingRequest] = useState(false);
     const [requestData, setRequestData] = useState<Request>();
+
+    useEffect(() => {
+        setIsProcessingRequest(false);
+    }, [requestData])
 
 
     const handleSendRequest = async (apiUrl: string) => {
@@ -81,8 +85,6 @@ const Card = ({ item }: any) => {
             // console.log(err.config);
             
         })
-        
-        setIsProcessingRequest(false);
     }
 
 
@@ -103,15 +105,15 @@ const Card = ({ item }: any) => {
                     <View style={layoutStyles.column}>
                         <Text style={styles.itemTitle}>{item.title}</Text>
 
-                        <Text style={styles.apiUrl}>{item.apiUrl}</Text>
+                        {item.isUrlHidden ? (
+                            <Text style={[styles.apiUrl, {fontStyle: 'italic'}]}>Hidden</Text>
+                        ) : (
+                            <Text style={styles.apiUrl}>{item.apiUrl}</Text>
+                        )}
                     </View>
                 </View>
             
-                <FeatherIcon
-                    name="check-circle"
-                    size={32}
-                    color="#00f120"
-                />
+                <Text style={styles.method}>{item.method}</Text>
             </View>
 
             <View style={[layoutStyles.row, {marginTop: isProcessingRequest ? 10 : 0, width: '100%'}]}>
@@ -133,7 +135,7 @@ const Card = ({ item }: any) => {
 
                 {
                     requestData && (
-                        <View style={[styles.responseContainer, {borderTopColor: requestData.success ? '#2cff2c' : '#ff6b6b'}]}>
+                        <ScrollView style={[styles.responseContainer, {borderTopColor: requestData.success ? '#2cff2c' : '#ff6b6b'}]}>
                             {Object.entries(requestData).map(([key, value], i) => {
                                 // console.log(value);
                                 
@@ -155,7 +157,7 @@ const Card = ({ item }: any) => {
                                             
                                         </Text>
                             })}
-                        </View>
+                        </ScrollView>
                     )
                 }
                 
@@ -184,6 +186,11 @@ const styles = StyleSheet.create({
         color: '#a7a7a7'
     },
 
+    method: {
+        fontSize: 16,
+        color: "#48ff48"
+    },
+
     jsonIcon: {
         marginRight: 10
     },
@@ -191,7 +198,8 @@ const styles = StyleSheet.create({
     responseContainer: {
         marginTop: 10,
         borderTopColor: '#ff6b6b',
-        borderTopWidth: 1
+        borderTopWidth: 1,
+        width: '100%'
     },
 
     responseText: {

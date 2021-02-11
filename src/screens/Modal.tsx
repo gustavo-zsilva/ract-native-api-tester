@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 
 import 'react-native-get-random-values';
 
-import { View, Text, StyleSheet, StatusBar, TextInput, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TextInput, TouchableNativeFeedback, TouchableOpacity, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,6 +18,8 @@ const Modal = ({ route, navigation }: any) => {
 
     const [title, setTitle] = useState('');
     const [apiUrl, setApiUrl] = useState('');
+    const [hideUrl, setHideUrl] = useState('shown');
+    const [defaultMethod, setDefaultMethod] = useState('GET');
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -25,10 +28,18 @@ const Modal = ({ route, navigation }: any) => {
 
         setSubmitted(true);
 
+        let isUrlHidden: boolean;
+
+        hideUrl === 'shown'
+        ? isUrlHidden = false
+        : isUrlHidden = true
+
         const newCard = {
             title,
             apiUrl,
             responseType: 'json',
+            isUrlHidden,
+            method: defaultMethod,
             id: uuidv4(),
         };
 
@@ -56,7 +67,7 @@ const Modal = ({ route, navigation }: any) => {
 
             <Text style={styles.title}>New API Endpoint</Text>
 
-            <View style={styles.form}>
+            <ScrollView style={[styles.form]} contentContainerStyle={{height: 350}}>
                 <View style={styles.row}>
                     <View style={{ flex: 2, marginRight: 15 }}>
                         <Text style={styles.label}>Name</Text>
@@ -78,6 +89,34 @@ const Modal = ({ route, navigation }: any) => {
                     </View>
                 </View>
 
+                <View style={styles.row}>
+                    <View style={{ flex: 1, marginRight: 15 }}>
+                        <Text style={styles.label}>Hide URL</Text>
+                        <Picker
+                            selectedValue={hideUrl}
+                            style={styles.input}
+                            onValueChange={(itemValue) => setHideUrl(itemValue.toString())}
+                        >
+                            <Picker.Item label="Shown" value="shown" />
+                            <Picker.Item label="Hidden" value="hidden" />
+                        </Picker>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.label}>Default Method</Text>
+                        <Picker
+                            selectedValue={defaultMethod}
+                            style={styles.input}
+                            onValueChange={(itemValue) => setDefaultMethod(itemValue.toString())}
+                        >
+                            <Picker.Item label="GET" value="GET" />
+                            <Picker.Item label="POST" value="POST" />
+                            <Picker.Item label="PUT" value="PUT" />
+                            <Picker.Item label="PATCH" value="PATCH" />
+                            <Picker.Item label="DELETE" value="DELETE" />
+                        </Picker>
+                    </View>
+                </View>
+
                 <Text style={styles.label}>Endpoint URL</Text>
                 <TextInput
                     style={styles.input}
@@ -87,13 +126,14 @@ const Modal = ({ route, navigation }: any) => {
                     value={apiUrl}
                     onChangeText={text => setApiUrl(text)}
                 />
+            </ScrollView>
 
-                <TouchableNativeFeedback onPress={handleFormSubmit}>
-                    <View style={[styles.submitButton, {backgroundColor: submitted ? '#43BF6C' : 'dodgerblue'}]}>
-                        <Text style={styles.submitButtonText}>Submit</Text>
-                    </View>
-                </TouchableNativeFeedback>
-            </View>
+            <TouchableNativeFeedback onPress={handleFormSubmit}>
+                <View style={[styles.submitButton, {backgroundColor: submitted ? '#43BF6C' : 'dodgerblue'}]}>
+                    <Text style={styles.submitButtonText}>Submit</Text>
+                </View>
+            </TouchableNativeFeedback>
+
         </View>
     );
 }
@@ -101,7 +141,7 @@ const Modal = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         // marginTop: StatusBar.currentHeight,
-        paddingTop: 100,
+        paddingTop: 120,
         padding: 30,
         flex: 1,
         backgroundColor: '#3F4A59'
@@ -115,7 +155,7 @@ const styles = StyleSheet.create({
 
     form: {
         marginTop: 30,
-        flex: 1
+        flex: 1,
     },
 
     label: {
@@ -147,7 +187,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'dodgerblue',
         elevation: 6,
         padding: 20,
-        borderRadius: 2
+        borderRadius: 2,
+        margin: 30
     },
 
     submitButtonText: {

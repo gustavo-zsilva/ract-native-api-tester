@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         elevation: 6,
         height: Dimensions.get('window').height,
-        width: 250,
+        width: 300,
         backgroundColor: '#455160',
         position: 'absolute',
         // top: StatusBar.currentHeight + 73,
