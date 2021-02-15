@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Main from '../screens/Main';
 import Modal from '../screens/Modal';
+import Details from '../screens/Details';
 
 const StackNavigator = () => {
     const { Navigator, Screen } = createStackNavigator();
@@ -14,6 +15,7 @@ const StackNavigator = () => {
             <Navigator headerMode="none" initialRouteName="Home">
                 <Screen name="Home" component={Main} />
                 <Screen name="Modal" component={Modal} />
+                <Screen name="Details" component={Details} />
             </Navigator>
         </NavigationContainer>
     );

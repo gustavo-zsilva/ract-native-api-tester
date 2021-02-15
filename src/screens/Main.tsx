@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 
-import { View, StyleSheet, StatusBar, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -60,7 +60,7 @@ const Main = ({ navigation }: any) => {
             </Header>
 
             
-            <Sidebar visible={isSidebarOpen} />
+            <Sidebar visible={isSidebarOpen} setData={setData} />
             
 
             <View 
@@ -70,8 +70,29 @@ const Main = ({ navigation }: any) => {
             <FlatList
                 data={data}
                 renderItem={({item}) => {
-                    return <Card item={item} />
+                    return <Card item={item} setData={setData} data={data} />
                 }}
+                ListEmptyComponent={() => (
+                    <View style={styles.emptyList}>
+                        <FeatherIcon name="moon" size={42} color="#FFF" style={{ marginBottom: 10 }} />
+                        <Text style={styles.emptyListText}>
+                            Parece que sua lista de APIs está vazia.
+                        </Text>
+                        <Text style={styles.emptyListText}>
+                            Comece a adicionar no botão de
+                            {' '}
+                            <Text style={{ fontSize: 24 }}>
+                                +!
+                            </Text>
+                        </Text>
+                    </View>
+                )}
+                ListFooterComponent={() => (
+                    <View style={styles.line} />
+                )}
+                keyExtractor={(item) => item.id}
+                refreshing={false}
+                onRefresh={() => getData('@api_list_key')}
             />
             </View>
             
@@ -110,6 +131,31 @@ const styles = StyleSheet.create({
     menu: {
         padding: 12,
     },
+
+    emptyList: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '50%'
+    },
+
+    emptyListText: {
+        color: '#FFF',
+        textAlign: 'center',
+        fontSize: 16,
+        marginTop: 8,
+        textShadowColor: 'rgba(0, 0, 0, 0.1)',
+        textShadowRadius: 6,
+        textShadowOffset: { width: 1, height: 1 }
+    },
+
+    line: {
+        width: '90%',
+        height: 1,
+        alignSelf: 'center',
+        marginTop: 20,
+        backgroundColor: '#586575'
+    }
 })
 
 export default Main;

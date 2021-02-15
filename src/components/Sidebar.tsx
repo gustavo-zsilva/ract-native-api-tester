@@ -6,13 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Slide from '../animations/Slide';
 
-const Sidebar = ({ children, visible }: any) => {
+const Sidebar = ({ children, visible, setData }: any) => {
 
     const handleDeleteAllCards = async () => {
         try {
             await AsyncStorage.clear();
             console.log('Deleted all cards');
             
+            setData([]);
         } catch (err) {
             console.error(err);
         }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, LayoutChangeEvent } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
 
 import axios from 'axios';
 
@@ -8,9 +10,12 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/AntDesign';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { Picker } from '@react-native-picker/picker';
+
 import Loading from '../animations/Loading';
 
 import layoutStyles from '../styles/Layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Request {
     success: boolean;
@@ -26,7 +31,9 @@ interface Request {
     server?: string;
 }
 
-const Card = ({ item }: any) => {
+const Card = ({ item, setData, data }: any) => {
+
+    const navigation = useNavigation();
 
     const [isProcessingRequest, setIsProcessingRequest] = useState(false);
     const [requestData, setRequestData] = useState<Request>();
@@ -40,7 +47,9 @@ const Card = ({ item }: any) => {
 
         setIsProcessingRequest(true);
 
-        axios.get(apiUrl)
+        axios(apiUrl, {
+            method: item.method
+        })
         .then((data) => {
             const dataToSave = {
                 success: true,
@@ -87,11 +96,40 @@ const Card = ({ item }: any) => {
         })
     }
 
+    const handleChangeApiMethod = async (itemValue: string) => {
+        let newData = [...data];
+        const indexOfItem = newData.findIndex((element) => element.id === item.id);
+        
+        newData[indexOfItem].method = itemValue;
+
+        try {
+            await AsyncStorage.setItem('@api_list_key', JSON.stringify(newData));
+        } catch (err) {
+            console.error(err);
+        }
+
+        setData(newData);
+    }
+
+
+    const methodsColors: any = {
+        GET: '#c1a2ff',
+        POST: '#48ff48',
+        PUT: '#ff9f50',
+        PATCH: '#ff9034',
+        DELETE: '#ff6464'
+    }
+
+    const successColors = {
+        true: '#2cff2c',
+        false: '#ff6b6b'
+    }
+
+    
 
     return (
         <TouchableOpacity
             style={styles.card}
-            key={item.id}
             onPress={() => handleSendRequest(item.apiUrl)}
         >
             <View style={layoutStyles.row}>
@@ -112,8 +150,22 @@ const Card = ({ item }: any) => {
                         )}
                     </View>
                 </View>
-            
-                <Text style={styles.method}>{item.method}</Text>
+
+                <Picker
+                    mode="dropdown"
+                    selectedValue={item.method}
+                    style={styles.picker}
+                    onValueChange={(itemValue) => handleChangeApiMethod(itemValue.toString())}
+                >
+                    {Object.keys(methodsColors).map((method: any, index: number) => (
+                        <Picker.Item
+                            key={index}
+                            label={method}
+                            value={method}
+                            color={methodsColors[method]}
+                        />
+                    ))}
+                </Picker>
             </View>
 
             <View style={[layoutStyles.row, {marginTop: isProcessingRequest ? 10 : 0, width: '100%'}]}>
@@ -121,7 +173,7 @@ const Card = ({ item }: any) => {
                     isProcessingRequest && (
                         <View style={[layoutStyles.row, {width: '100%'}]}>
                             <Loading>
-                                <Icon name="loading1" size={32} color="#FFF" style={{transform: [{rotate: '30deg'}]}} />
+                                <Icon name="loading1" size={32} color="#FFF" />
                             </Loading>
                             
                             <TouchableOpacity>
@@ -135,7 +187,7 @@ const Card = ({ item }: any) => {
 
                 {
                     requestData && (
-                        <ScrollView style={[styles.responseContainer, {borderTopColor: requestData.success ? '#2cff2c' : '#ff6b6b'}]}>
+                        <ScrollView style={[styles.responseContainer, {borderTopColor: successColors[requestData.success]}]} scrollEnabled={false}>
                             {Object.entries(requestData).map(([key, value], i) => {
                                 // console.log(value);
                                 
@@ -157,6 +209,34 @@ const Card = ({ item }: any) => {
                                             
                                         </Text>
                             })}
+                            <View style={[styles.row, {marginTop: 10}]}>
+                                <TouchableOpacity
+                                    style={{marginRight: 10, padding: 4}}
+                                    onPress={() => setRequestData(undefined)}
+                                >
+                                    <FeatherIcon
+                                        name="trash-2"
+                                        size={20}
+                                        color={successColors[requestData.success]}
+                                    />
+                                </TouchableOpacity>
+                                <View style={[styles.line, {backgroundColor: successColors[requestData.success]}]} />
+                                <TouchableOpacity
+                                    style={[styles.row, {marginLeft: 10, padding: 4}]}
+                                    onPress={() => navigation.navigate('Details', {
+                                        
+                                    })}
+                                >
+                                    <Text style={{color: successColors[requestData.success], marginRight: 2}}>
+                                        see details
+                                    </Text>
+                                    <MaterialIcon
+                                        name="arrow-expand-right"
+                                        size={20}
+                                        color={successColors[requestData.success]}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </ScrollView>
                     )
                 }
@@ -188,7 +268,7 @@ const styles = StyleSheet.create({
 
     method: {
         fontSize: 16,
-        color: "#48ff48"
+        // color: "#48ff48"
     },
 
     jsonIcon: {
@@ -206,6 +286,28 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginTop: 3,
         color: '#FFF',
+    },
+
+    picker: {
+        minWidth: 120,
+        alignSelf: 'flex-end',
+        height: 40,
+        fontSize: 15,
+    },
+
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+
+    line: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#ff6b6b',
+    },
+
+    details: {
+        
     }
 })
 

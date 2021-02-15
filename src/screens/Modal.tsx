@@ -93,6 +93,7 @@ const Modal = ({ route, navigation }: any) => {
                     <View style={{ flex: 1, marginRight: 15 }}>
                         <Text style={styles.label}>Hide URL</Text>
                         <Picker
+                            mode="dropdown"
                             selectedValue={hideUrl}
                             style={styles.input}
                             onValueChange={(itemValue) => setHideUrl(itemValue.toString())}
@@ -104,6 +105,7 @@ const Modal = ({ route, navigation }: any) => {
                     <View style={{ flex: 1 }}>
                         <Text style={styles.label}>Default Method</Text>
                         <Picker
+                            mode="dropdown"
                             selectedValue={defaultMethod}
                             style={styles.input}
                             onValueChange={(itemValue) => setDefaultMethod(itemValue.toString())}
