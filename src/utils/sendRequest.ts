@@ -1,17 +1,17 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
-const sendRequest = (url: string, method: string) => {
+const sendRequest = (url: string, method: any) => {
     let data;
 
     axios(url, {
-        method:  method,
+        method,
     }).then(data => {
         data = data
     }).catch(err => {
         data = err
     })
 
-    return { data };
+    return data;
 }
 
 export default sendRequest;

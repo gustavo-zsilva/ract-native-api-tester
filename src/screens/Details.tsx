@@ -1,24 +1,29 @@
 import React from 'react';
 
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../components/Header';
 
 import Request from '../components/tabs/Request';
 import Response from '../components/tabs/Response';
+import Query from '../components/tabs/Query';
 
 
-
-
-const Details = ({ item }: any) => {
+const Details = ({ navigation, route }: any) => {
     const { Navigator, Screen } = createMaterialTopTabNavigator();
+
+    const { item } = route.params;
 
     return (
         <View style={styles.container}>
             <Header>
-                <Text>Header</Text>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+                    <Icon name="arrow-back" size={32} color="#FFF" />
+                </TouchableOpacity>
             </Header>
 
             
@@ -38,8 +43,9 @@ const Details = ({ item }: any) => {
                 }}
                 swipeEnabled
             >
-                <Screen name="Request" component={Request} initialParams={{ item: item }} />
+                <Screen name="Request" component={Request} initialParams={{ item }} />
                 <Screen name="Response" component={Response} />
+                <Screen name="Query" component={Query} />
             </Navigator>
             
         </View>
@@ -59,6 +65,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#3F4A59'
+    },
+
+    back: {
+        padding: 12,
     }
 })
 

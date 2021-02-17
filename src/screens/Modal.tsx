@@ -8,8 +8,6 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
 
-import Icon from 'react-native-vector-icons/Ionicons';
-
 import Header from '../components/Header';
 
 const Modal = ({ route, navigation }: any) => {

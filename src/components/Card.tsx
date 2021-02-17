@@ -223,9 +223,7 @@ const Card = ({ item, setData, data }: any) => {
                                 <View style={[styles.line, {backgroundColor: successColors[requestData.success]}]} />
                                 <TouchableOpacity
                                     style={[styles.row, {marginLeft: 10, padding: 4}]}
-                                    onPress={() => navigation.navigate('Details', {
-                                        
-                                    })}
+                                    onPress={() => navigation.navigate('Details', { item })}
                                 >
                                     <Text style={{color: successColors[requestData.success], marginRight: 2}}>
                                         see details
