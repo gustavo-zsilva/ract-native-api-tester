@@ -2,16 +2,16 @@ import React, { useContext } from 'react';
 
 import { View, Text, StyleSheet } from 'react-native';
 
-import { dataContext } from './Request';
+import DataContext from '../../contexts/data';
 
 const Body = () => {
 
-    const data = useContext(dataContext);
+    const data = useContext(DataContext);
 
     return (
         <View>
             <Text>
-                {JSON.stringify(data.data)}
+                {/* {JSON.stringify(data.request.body)} */}
             </Text>
         </View>
     )

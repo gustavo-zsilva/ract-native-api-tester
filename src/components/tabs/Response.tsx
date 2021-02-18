@@ -16,7 +16,6 @@ const Response = () => {
             <Navigator>
                 <Screen name="All" component={All} />
                 <Screen name="Body" component={Body} />
-                <Screen name="Headers" component={Headers} />
             </Navigator>
         </View>
     )
